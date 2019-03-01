@@ -1,0 +1,29 @@
+{
+  "name": "xxencode",
+  "version": "1.0.0",
+  "description": "Node.js version of xxencode",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zer0i3/XXencode.git"
+  },
+  "keywords": [
+    "xxencode",
+    "xxdecode",
+    "xxcode"
+  ],
+  "author": "zer0i3",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/zer0i3/XXencode/issues"
+  },
+  "homepage": "https://github.com/zer0i3/XXencode#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "mocha": "^6.0.2"
+  }
+}
