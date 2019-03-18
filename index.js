@@ -1,44 +1,36 @@
 'use strict';
 
+var base = '+-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 /**
  * 
  * @param {String} inString 
  */
 function encode(inString,encoding) {
     encoding = encoding || 'utf8'
-	var stop = false;
-	var inIndex = 0;
-	var outIndex = 0;
 
 	var inBytes = Buffer.from(inString,encoding);
 	var buffLen = inBytes.length;
 	var outBytes = Buffer.alloc(buffLen + buffLen / 3 + 4);
-
-	do {
-		for (var i = 0; i < n; i += 3) {
-			if (buffLen - inIndex < 3) {
-				var padding = new Array(3);
-				var z = 0;
-
-				while (inIndex + z < buffLen) {
-					padding[z] = inBytes[inIndex + z];
-					++z;
-				}
-
-				encodeBytes(padding, 0, outBytes, outIndex);
-			} else {
-				encodeBytes(inBytes, inIndex, outBytes, outIndex);
-			}
-			inIndex += 3;
-			outIndex += 4;
-		}
-
-        if(inIndex >= buffLen){
-            stop = true;
-        }
-	} while (!stop);
-
-	return outBytes.toString().substring(0, outIndex);
+	var outLen = 0;
+	for (var i = 0; i < buffLen; i += 3) {
+		outLen = i / 3 * 4;
+		encodeBytes(inBytes, i, outBytes, outLen);
+	}
+	var raw_result = '';
+	for (var j = 0; j < outLen + 4; j++){
+		raw_result += base[outBytes[j]];
+	}
+	var result_array = [];
+	var lnum = Math.floor(raw_result.length / 60);
+	for (var k = 0; k < lnum; k++) {
+		result_array.push(base[60] + raw_result.substr(k*60,60) + "\r\n");
+	}
+	var left = raw_result.length % 60;
+	if (left != 0) {
+		result_array.push(base[left/4*3] + raw_result.substr(lnum*60) + "\r\n");
+	}
+	var final_result = result_array.join('');
+	return final_result.substring(0,final_result.length - 2);
 }
 
 /**
@@ -46,25 +38,42 @@ function encode(inString,encoding) {
  * @param {String} inString 
  */
 function decode(inString) {
-	var stop = false;
-	var inIndex = 0;
-	var outIndex = 0;
+	var in_array = [];
+	if(inString.indexOf("\r\n") != -1){
+		in_array = inString.split("\r\n");
+	}else{
+		in_array = inString.split("\n");
+	}
+	var raw_string = '';
+	var total_len = 0;
+	for (let str of in_array) {
+		let first = str.substr(0,1);
 
-	var inBytes = Buffer.from(inString);
-	var buffLen = inBytes.length;
-	var outBytes = Buffer.alloc(buffLen);
+		let line_ascii_num = base.indexOf(first);
 
-	do {
-		if (inIndex < buffLen) {
-			decodeChars(inBytes, inIndex, outBytes, outIndex);
-			outIndex += 3;
-			inIndex += 4;
-		} else {
-			stop = true;
+		let len = line_ascii_num/3*4;
+
+		total_len += line_ascii_num;
+
+		let content = str.substr(1);
+		if (len == content.length){
+			raw_string += content;
+		}else{
+			throw "Error content";
 		}
-	} while (!stop);
-
-	return outBytes.slice(0, outIndex).toString();
+	}
+	var buffLen = raw_string.length;
+	var inBytes = Buffer.alloc(buffLen);
+	for(let cn = 0; cn < buffLen; cn++){
+		inBytes[cn] = base.indexOf(raw_string[cn]);
+	}
+	var outBytes = Buffer.alloc(buffLen);
+	var outLen = 0;
+	for(let i = 0; i < buffLen; i++){
+		outLen = i / 4 * 3;
+		decodeChars(inBytes, i, outBytes, outLen);
+	}
+	return outBytes.slice(0, total_len).toString();
 }
 
 // private helper functions
