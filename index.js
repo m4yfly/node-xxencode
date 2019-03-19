@@ -3,7 +3,8 @@
 var base = '+-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 /**
  * 
- * @param {String} inString 
+ * @param {String} The value to encoded. 
+ * @param {String} encoding
  */
 function encode(inString,encoding) {
     encoding = encoding || 'utf8'
@@ -21,13 +22,13 @@ function encode(inString,encoding) {
 		raw_result += base[outBytes[j]];
 	}
 	var result_array = [];
-	var lnum = Math.floor(raw_result.length / 60);
+	var lnum = Math.floor(buffLen / 45);
 	for (var k = 0; k < lnum; k++) {
-		result_array.push(base[60] + raw_result.substr(k*60,60) + "\r\n");
+		result_array.push(base[45] + raw_result.substr(k*60,60) + "\r\n");
 	}
-	var left = raw_result.length % 60;
+	var left = buffLen % 45;
 	if (left != 0) {
-		result_array.push(base[left/4*3] + raw_result.substr(lnum*60) + "\r\n");
+		result_array.push(base[left] + raw_result.substr(lnum*60) + "\r\n");
 	}
 	var final_result = result_array.join('');
 	return final_result.substring(0,final_result.length - 2);
@@ -35,9 +36,12 @@ function encode(inString,encoding) {
 
 /**
  * 
- * @param {String} inString 
+ * @param {String} The value to decoded 
+ * @param {String} encoding 
  */
-function decode(inString) {
+function decode(inString,encoding) {
+	encoding = encoding || 'utf8'
+
 	var in_array = [];
 	if(inString.indexOf("\r\n") != -1){
 		in_array = inString.split("\r\n");
@@ -56,11 +60,7 @@ function decode(inString) {
 		total_len += line_ascii_num;
 
 		let content = str.substr(1);
-		if (len == content.length){
-			raw_string += content;
-		}else{
-			throw "Error content";
-		}
+		raw_string += content;
 	}
 	var buffLen = raw_string.length;
 	var inBytes = Buffer.alloc(buffLen);
@@ -73,7 +73,7 @@ function decode(inString) {
 		outLen = i / 4 * 3;
 		decodeChars(inBytes, i, outBytes, outLen);
 	}
-	return outBytes.slice(0, total_len).toString();
+	return outBytes.slice(0, total_len).toString(encoding);
 }
 
 // private helper functions
