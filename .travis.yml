@@ -6,13 +6,27 @@ cache:
     - node_modules
 
 install:
-  - npm config set registry http://registry.npm.taobao.org/
-  - npm cache verify
   - npm install
 
-script:
-  - npm test
+stages:
+ - test
+ - name: deploy
 
-branches:
-  only:
-    - master
+jobs:
+ include:
+   - stage: test
+     script:
+       - node --version
+       - npm --version
+       - echo "Testing Started ..."
+       - npm test
+       - echo "Testing Finished."
+
+   - stage: deploy
+     deploy:
+       provider: npm
+       email: i@aiyo.xyz
+       api_key: "$NPM_TOKEN"
+       skip_cleanup: true
+       on:
+         all_branches: true

@@ -11,6 +11,28 @@ Installation
 --------
 
 ```shell
-npm install -g xxencode
+npm install xxencode
+```
+Examples
+--------
+
+The following examples show you how to use xxencode.
+
+```javascript
+var xxencode = require('xxencode');
+
+// encode something
+var encoded = xxencode.encode('zer0i3');
+// '4SaJmA4Yn'
+
+// decode something
+var decoded = xxencode.decode('4SaJmA4Yn');
+// 'zer0i3'
 ```
 
+Running Tests
+----
+
+    $ npm test
+
+Note the xxencode utility must be installed for all tests to pass.
