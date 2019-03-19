@@ -55,8 +55,6 @@ function decode(inString,encoding) {
 
 		let line_ascii_num = base.indexOf(first);
 
-		let len = line_ascii_num/3*4;
-
 		total_len += line_ascii_num;
 
 		let content = str.substr(1);
