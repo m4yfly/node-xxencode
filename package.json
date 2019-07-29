@@ -1,6 +1,6 @@
 {
   "name": "xxencode",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Node.js version of xxencode",
   "main": "index.js",
   "scripts": {
@@ -21,9 +21,9 @@
     "url": "https://github.com/zer0i3/XXencode/issues"
   },
   "homepage": "https://github.com/zer0i3/XXencode#readme",
-  "dependencies": {},
-  "devDependencies": {
-    "assert": "^1.4.1",
-    "mocha": "^6.0.2"
-  }
+  "dependencies": {
+    "assert": "^2.0.0",
+    "mocha": "^6.2.0"
+  },
+  "devDependencies": {}
 }
